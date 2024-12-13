@@ -7,6 +7,7 @@ use App\Entity\Expenses;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -15,7 +16,7 @@ class DashboardController extends AbstractDashboardController
     #[Route('/admin', name: 'admin')]
     public function index(): Response
     {
-        return parent::index();
+        //return parent::index();
 
         // Option 1. You can make your dashboard redirect to some common page of your backend
         //
@@ -32,6 +33,11 @@ class DashboardController extends AbstractDashboardController
         // (tip: it's easier if your template extends from @EasyAdmin/page/content.html.twig)
         //
         // return $this->render('some/path/my-dashboard.html.twig');
+
+        $routeBuilder = $this->container->get(AdminUrlGenerator::class);
+        $url = $routeBuilder->setController(CategoryCrudController::class)->generateUrl();
+
+        return $this->redirect($url);
     }
 
     public function configureDashboard(): Dashboard
@@ -45,7 +51,7 @@ class DashboardController extends AbstractDashboardController
         //yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
         // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
         yield MenuItem::linktoRoute('Back to the website', 'fas fa-home', 'homepage');
-        yield MenuItem::linkToCrud('Conferences', 'fas fa-dollar-sign', Expenses::class);
-        yield MenuItem::linkToCrud('Comments', 'fas fa-list-alt', Categories::class);
+        yield MenuItem::linkToCrud('Expenses', 'fas fa-dollar-sign', Expenses::class);
+        yield MenuItem::linkToCrud('Categories', 'fas fa-list-alt', Category::class);
     }
 }
