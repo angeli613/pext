@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello CategoryController!{% endblock %}
+{% block title %}Category Index{% endblock %}
 
 {% block body %}
 <style>
@@ -9,13 +9,22 @@
     .example-wrapper code { background: #000435; padding: 2px 6px; }
 </style>
 
-<div class="example-wrapper">
-    <h1>Hello Category ✅</h1>
+<h1>Categories</h1> 
+<ul> 
+    {% for category in categories %} 
+        <li>{{ category }}</li> 
+    {% endfor %}
+</ul>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/sunno/pext/src/Controller/CategoryController.php</code></li>
-        <li>Your template at <code>C:/Users/sunno/pext/templates/category/index.html.twig</code></li>
-    </ul>
-</div>
+    </script>
+     <h1>Create New Expense</h1>
+    {{ form_start(expenses_form) }}
+        {{ form_widget(expenses_form) }}
+        <button class="btn">{{ button_label|default('Save') }}</button>
+    {{ form_end(expenses_form) }}
+{% endblock %} 
+{% block javascripts %}  
+    {{ parent() }} 
+    {{ encore_entry_script_tags('app') }}
+    
 {% endblock %}

@@ -24,8 +24,8 @@ class ExpensesCrudController extends AbstractCrudController
 
     public function configureCrud(Crud $crud): Crud{
         return $crud
-            ->setEntityLabelInSingular('Expenses Expense')
-            ->setEntityLabelInPlural('Expenses Expenses')
+            ->setEntityLabelInSingular('Expense')
+            ->setEntityLabelInPlural('Expenses')
             ->setSearchFields(['title', 'amount', 'category.name'])
             ->setDefaultSort(['date' => 'DESC'])
         ;
