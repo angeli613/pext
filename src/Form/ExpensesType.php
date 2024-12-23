@@ -17,14 +17,14 @@ class ExpensesType extends AbstractType
         $builder
             ->add('Title')
             ->add('amount')
+            ->add('category', EntityType::class, [
+                'class' => Category::class,
+                'choice_label' => 'name',
+            ])
             ->add('date', null, [
                 'widget' => 'single_text',
             ])
             ->add('notes')
-            ->add('category', EntityType::class, [
-                'class' => Category::class,
-                'choice_label' => 'id',
-            ])
            // ->add('submit', SubmitType::class)
         ;
     }

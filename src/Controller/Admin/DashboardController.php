@@ -43,12 +43,12 @@ class DashboardController extends AbstractDashboardController
         //
         // return $this->render('some/path/my-dashboard.html.twig');
 
-       /* $routeBuilder = $this->container->get(AdminUrlGenerator::class);
+        $routeBuilder = $this->container->get(AdminUrlGenerator::class);
         $url = $routeBuilder->setController(CategoryCrudController::class)->generateUrl();
 
-        return $this->redirect($url);*/
+        return $this->redirect($url);
 
-        $expenses = $this->entityManager->getRepository(Expenses::class)->findAll();
+        /*$expenses = $this->entityManager->getRepository(Expenses::class)->findAll();
 
         $data = [];
         foreach($expenses as $expense){
@@ -60,7 +60,7 @@ class DashboardController extends AbstractDashboardController
         }
         return $this->render('admin/dashboard.html.twig', [
             'chartData' => json_encode($data),
-        ]);
+        ]);*/
     }
 
     public function configureDashboard(): Dashboard

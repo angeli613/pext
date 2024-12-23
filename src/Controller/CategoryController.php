@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Expenses;
 use App\Form\ExpensesType;
 use App\Repository\CategoryRepository;
+use App\Repository\ExpensesRepository;
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,12 +16,18 @@ use Twig\Environment;
 
 class CategoryController extends AbstractController
 {
-    public function __construct(private EntityManagerInterface $entityManager, ){}
+    private ManagerRegistry $doctrine;
 
+    public function __construct(ManagerRegistry $doctrine, EntityManagerInterface $entityManager)
+    {
+        $this->doctrine = $doctrine;
+        $this->entityManager = $entityManager;
+    }
+   // #[Route('/', name: 'homepage')]
    // #[Route('/category', name: 'app_category')]
    #[Route('/', name: 'homepage')]
    //public function index(): Response
-    public function index(Environment $twig, CategoryRepository $categoryRepository, Request $request):Response
+    public function index(Environment $twig, CategoryRepository $categoryRepository, ExpensesRepository $expensesRepository, Request $request):Response
     {
         /*return $this->render('category/index.html.twig', [
             'controller_name' => 'CategoryController',
@@ -43,18 +51,39 @@ class CategoryController extends AbstractController
             ]; 
         }, $categories); */
        
+       $currentYear = date('Y');
+       $currentMonth = date('m');
+        
+        $expensesRepository = $this->doctrine->getRepository('App\Entity\Expenses');
+        $expensesData = $expensesRepository->findByMonthAndYear($currentMonth, $currentYear);
+        
+        $categories = [];
+        $data = [];
+
+        foreach ($expensesData as $expense) {
+            $data[] = $expense->getAmount();
+            $category = $expense->getCategory(); 
+            $categoryName = $category ? $category->getName() : 'No Category';
+            $categories[] = $categoryName;            
+        }
+
         $expense = new Expenses(); 
         $form = $this->createForm(ExpensesType::class, $expense); 
         $form->handleRequest($request); 
-        // Handle form submission 
+        
         if ($form->isSubmitted() && $form->isValid()) { 
             $this->entityManager->persist($expense); 
             $this->entityManager->flush(); 
             return $this->redirectToRoute('homepage'); 
         }
+
+        $selectedMonth = $request->query->get('month', date('m'));
         return $this->render('category/index.html.twig', [ 
             'expenses_form' => $form->createView(),
-            'categories' => $categoryRepository->findAll(), 
+            'categories' => $categories,
+            'selectedMonth' => $currentMonth,
+            'selectedYear' =>$currentYear,
+            'categoryData' => $data,
         ]);
     } 
 }
