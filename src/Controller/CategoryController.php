@@ -60,13 +60,19 @@ class CategoryController extends AbstractController
         $categories = [];
         $data = [];
 
-        foreach ($expensesData as $expense) {
-            $data[] = $expense->getAmount();
+        foreach ($expensesData as $expense) { 
             $category = $expense->getCategory(); 
-            $categoryName = $category ? $category->getName() : 'No Category';
-            $categories[] = $categoryName;            
-        }
-
+            $categoryName = $category ? $category->getName() : 'No Category'; 
+            
+            if (!isset($data[$categoryName])) { 
+                $data[$categoryName] = 0; 
+            } 
+            
+            $data[$categoryName] += $expense->getAmount(); 
+        } 
+        
+        $categoryNames = array_keys($data); 
+        $categoryData = array_values($data); 
         $expense = new Expenses(); 
         $form = $this->createForm(ExpensesType::class, $expense); 
         $form->handleRequest($request); 
@@ -74,16 +80,17 @@ class CategoryController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) { 
             $this->entityManager->persist($expense); 
             $this->entityManager->flush(); 
+            
             return $this->redirectToRoute('homepage'); 
-        }
-
-        $selectedMonth = $request->query->get('month', date('m'));
+        } 
+        
+        $selectedMonth = $request->query->get('month', date('m')); 
         return $this->render('category/index.html.twig', [ 
-            'expenses_form' => $form->createView(),
-            'categories' => $categories,
-            'selectedMonth' => $currentMonth,
-            'selectedYear' =>$currentYear,
-            'categoryData' => $data,
+            'expenses_form' => $form->createView(), 
+            'categories' => $categoryNames, 
+            'selectedMonth' => $currentMonth, 
+            'selectedYear' => $currentYear, 
+            'categoryData' => $categoryData,
         ]);
     } 
 }
