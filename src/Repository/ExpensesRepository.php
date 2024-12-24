@@ -11,8 +11,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @extends ServiceEntityRepository<Expenses>
  */
 class ExpensesRepository extends ServiceEntityRepository{
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(ManagerRegistry $registry) {
         parent::__construct($registry, Expenses::class);
     }
 
@@ -40,8 +39,7 @@ class ExpensesRepository extends ServiceEntityRepository{
     //            ->getOneOrNullResult()
     //        ;
     //    }
-    public function findByMonthAndYear(int $month, int $year): array
-    {
+    public function findByMonthAndYear(int $month, int $year): array {
         $conn = $this->getEntityManager()->getConnection();
 
         $sql = '
@@ -64,19 +62,18 @@ class ExpensesRepository extends ServiceEntityRepository{
         return $expenses;
     }
     
-    public function createExpenseFromArray(array $data): Expenses
-    {
-            $expense = new Expenses();
-            $expense->getId($data['id']);
-            $expense->setDate(new \DateTime($data['date']));
-            $expense->setAmount($data['amount']);
+    public function createExpenseFromArray(array $data): Expenses {
+        $expense = new Expenses();
+        $expense->getId($data['id']);
+        $expense->setDate(new \DateTime($data['date']));
+        $expense->setAmount($data['amount']);
 
-            if (isset($data['category_id'])){
-                $categoryRepository = $this->getEntityManager()->getRepository(Category::class);
-                $category = $categoryRepository->find($data['category_id']);
-                $expense->setCategory($category);
-            }
+        if (isset($data['category_id'])){
+            $categoryRepository = $this->getEntityManager()->getRepository(Category::class);
+            $category = $categoryRepository->find($data['category_id']);
+            $expense->setCategory($category);
+        }
 
-            return $expense;
+        return $expense;
     }
 }

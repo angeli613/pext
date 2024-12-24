@@ -17,7 +17,7 @@ class Expenses
     #[ORM\Column(length: 255)]
     private ?string $Title = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 6, scale: 2)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private ?string $amount = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]

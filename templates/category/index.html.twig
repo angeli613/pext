@@ -1,113 +1,165 @@
-{% extends 'base.html.twig' %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Symfony & React{% endblock %}</title>
+        <style>
+            #mebody {background-color:rgb(0, 5, 60); color: white; font-family: Arial, sans-serif; } 
+            .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; } 
+            .example-wrapper code { background: #000435; padding: 2px 6px; } 
+            h1 { text-align: center; margin-bottom: 20px; } 
+            ul { list-style-type: none; padding: 0; } 
+            li { padding: 5px 0; } 
+            .form-container { background:rgb(4, 4, 81); padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin-top: 20px; } 
+            .form-group { margin-bottom: 15px; } 
+            .form-group label { display: block; margin-bottom: 5px; } 
+            .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; } 
+            .btn { display: inline-block; padding: 10px 20px; background-color:rgb(5, 50, 98); color: white; text-align: center; border: none; border-radius: 4px; cursor: pointer;} 
+            .btn:hover { background-color:rgb(3, 37, 73); }
+            .modal-header, .modal-body, .modal-footer { background-color:rgb(3, 37, 73); color:white; }
+            .btn-btn-primary { width:45%;padding-right:10px; }
+            .btn-btn-secondary { margin-left:500px; }
+            table { width: 100%; border-collapse: collapse; background-color: #f3f3f3; border-spacing: 0; border-bottom: 1px solid #000; } 
+            th, td { border: 1px solid transparent; padding: 8px; text-align: left; } 
+            tr { border-bottom: 5px solid blue; }
+            nav { background-color: #333; color: white; padding: 1em; } 
+            nav ul { list-style: none; padding: 0; margin: 0; display: flex; justify-content: space-around; } 
+            nav li { display: inline; } 
+            nav a { color: white; text-decoration: none; padding: 0.5em 1em; } 
+            nav a:hover { background-color: #555; }
+        </style>
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
+    </head>
+    <body id="mebody">
+        <!--Navbar-->
+        <div id="root"></div>
 
-{% block title %}Category Index{% endblock %}
+        <!--Expenses summary-->
+        <div class="row">
+            <div class="col">
+                <div class="container mt-3">
+                    <h3>Total Expenses for {{ monthname }} {{ selectedYear }}: $ {{ totalAmount }}</h3>
+                </div> 
 
-{% block body %}
-<style>
-    #mebody {background-color:rgb(0, 5, 60); color: white; font-family: Arial, sans-serif; } 
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; } 
-    .example-wrapper code { background: #000435; padding: 2px 6px; } 
-    h1 { text-align: center; margin-bottom: 20px; } 
-    ul { list-style-type: none; padding: 0; } 
-    li { padding: 5px 0; } 
-    .form-container { background:rgb(4, 4, 81); padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin-top: 20px; } 
-    .form-group { margin-bottom: 15px; } 
-    .form-group label { display: block; margin-bottom: 5px; } 
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; } 
-    .btn { display: inline-block; padding: 10px 20px; background-color:rgb(5, 50, 98); color: white; text-align: center; border: none; border-radius: 4px; cursor: pointer;} 
-    .btn:hover { background-color:rgb(3, 37, 73); }
-    .modal-header, .modal-body, .modal-footer { background-color:rgb(3, 37, 73); color:white; }
-    .modal .btn-btn-primary { width:45%;padding-right:10px; }
-    .btn-btn-secondary { margin-left:500px; }
-</style>
-<body id="mebody">
-<h2>Categories</h2> 
-<ul> 
-    {% for category in categories %} 
-        <li>{{ category }}</li> 
-    {% endfor %}
-</ul>
-
-<div class="container mt-3">
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#memodal">Create New Expense</button>
-</div>
-
-<!-- The Modal -->
-<div class="modal" id="memodal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Record your expense</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                {{ form_start(expenses_form) }}
-                <div class="form-group">
-                    {{ form_label(expenses_form.Title) }}
-                    {{ form_widget(expenses_form.Title) }}
-                </div>
-                <div class="form-group">
-                    {{ form_label(expenses_form.amount) }}
-                    {{ form_widget(expenses_form.amount) }}
-                </div>
-                <div class="form-group">
-                    {{ form_label(expenses_form.category) }}
-                    {{ form_widget(expenses_form.category) }}
-                </div>
-                <div class="form-group">
-                    {{ form_label(expenses_form.date) }}
-                    {{ form_widget(expenses_form.date) }}
-                </div>
-                <div class="form-group">
-                    {{ form_label(expenses_form.notes) }}
-                    {{ form_widget(expenses_form.notes) }}
-                </div>
-                <button class="btn btn-primary">{{ button_label|default('Save ME!') }}</button>  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                {{ form_end(expenses_form) }}
-            </div>
-            <div class="modal-footer" style="background-color:rgb(3, 37, 73); ">
                 
+                <!--Action button-->
+                <div class="container mt-3">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#memodal">Add Expense</button>
+                </div>
+
+                <div class="modal" id="memodal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Record your expense</h4>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                {{ form_start(expenses_form) }}
+                                <div class="form-group">
+                                    {{ form_label(expenses_form.Title) }}
+                                    {{ form_widget(expenses_form.Title) }}
+                                </div>
+                                <div class="form-group">
+                                    {{ form_label(expenses_form.amount) }}
+                                    {{ form_widget(expenses_form.amount) }}
+                                </div>
+                                <div class="form-group">
+                                    {{ form_label(expenses_form.category) }}
+                                    {{ form_widget(expenses_form.category) }}
+                                </div>
+                                <div class="form-group">
+                                    {{ form_label(expenses_form.date) }}
+                                    {{ form_widget(expenses_form.date) }}
+                                </div>
+                                <div class="form-group">
+                                    {{ form_label(expenses_form.notes) }}
+                                    {{ form_widget(expenses_form.notes) }}
+                                </div>
+                                <button class="btn btn-primary">{{ button_label|default('Save') }}</button>  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                {{ form_end(expenses_form) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="container mt-3" style="width:50%;height:100%;">
+                    <canvas id="myChart"></canvas>
+                </div>
+        </div>
+
+        <div class="container-lg">
+            <h2>Expenses:</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Title</th>
+                        <th>Amount</th>
+                        <th>Notes</th>
+                        <th>Category</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in expenseList %}
+                        <tr>
+                            <td>{{ expense.date|date('Y-m-d') }}</td>
+                            <td>{{ expense.title }}</td>
+                            <td>{{ expense.amount }}</td>
+                            <td>{{ expense.notes }}</td>
+                            <td>{{ expense.category.name }}</td>
+                            <td></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="container mt-3">
+            <h2>Card Header and Footer</h2>
+            <div class="card">
+                <div class="card-header">Header</div>
+                <div class="card-body">Content</div> 
+                <div class="card-footer">Footer</div>
             </div>
         </div>
-    </div>
-</div>
-<div class="container mt-3" style="width:515px;height:215px;">
-    <canvas id="myChart"></canvas>
-</div>
 
- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script>
-  const ctx = document.getElementById('myChart').getContext('2d');
+        <script>
+        const ctx = document.getElementById('myChart').getContext('2d');
 
-  new Chart(ctx, {
-    type: 'pie',
-    data: {
-      labels: {{ categories|json_encode()|raw }},
-      datasets: [{
-        label: 'Expenses per month',
-        data: {{ categoryData|json_encode()|raw }},
-        borderWidth: 1,
-        backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)'],
-        hoverOffset: 4
-      }]
-    },
-    options: {
-        cutout: '0%',
-        scales: {
-            y: {
-                beginAtZero: true
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+            labels: {{ categories|json_encode()|raw }},
+            datasets: [{
+                label: 'Expenses per month',
+                data: {{ categoryData|json_encode()|raw }},
+                borderWidth: 1,
+                backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)', 'rgb(10, 138, 55)', 'rgb(154, 87, 225)'],
+                hoverOffset: 4
+            }]
+            },
+            options: {
+                cutout: '0%',
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
             }
-        }
-    }
-  });
-</script>
-</body>
-{% endblock %} 
+        });
+        </script>
 
-{% block javascripts %}
-    {{ parent() }}
-    {{ encore_entry_script_tags('app') }}
-{% endblock %}
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
+    </body>
+</html>

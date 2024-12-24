@@ -12,50 +12,24 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
-use Twig\Environment;
 
-class CategoryController extends AbstractController
-{
+
+class CategoryController extends AbstractController {
     private ManagerRegistry $doctrine;
 
-    public function __construct(ManagerRegistry $doctrine, EntityManagerInterface $entityManager)
-    {
+    public function __construct(ManagerRegistry $doctrine, EntityManagerInterface $entityManager) {
         $this->doctrine = $doctrine;
         $this->entityManager = $entityManager;
     }
-   // #[Route('/', name: 'homepage')]
-   // #[Route('/category', name: 'app_category')]
-   #[Route('/', name: 'homepage')]
-   //public function index(): Response
-    public function index(Environment $twig, CategoryRepository $categoryRepository, ExpensesRepository $expensesRepository, Request $request):Response
-    {
-        /*return $this->render('category/index.html.twig', [
-            'controller_name' => 'CategoryController',
-        ]);
-        return new Response(<<<EOF
-			<html>
-				<body>
-					<h1>Personal Expense Tracker</h1>
-				</body>
-			</html>
-			EOF
-		);
-        return new Response($twig->render('category/index.html.twig', [
-            'categories' => $categoryRepository->findAll(), 
-
-        ]));
-        /*$categories = $categoryRepository->findAll(); 
-        $data = array_map(function($category) { 
-            return [ 
-                'name' => $category->getName(), 
-            ]; 
-        }, $categories); */
-       
-       $currentYear = date('Y');
-       $currentMonth = date('m');
+    
+    #[Route('/', name: 'homepage')]
+    public function index(CategoryRepository $categoryRepository, ExpensesRepository $expensesRepository, Request $request):Response {       
+        $currentYear = date('Y');
+        $currentMonth = date('m');
         
         $expensesRepository = $this->doctrine->getRepository('App\Entity\Expenses');
         $expensesData = $expensesRepository->findByMonthAndYear($currentMonth, $currentYear);
+
         
         $categories = [];
         $data = [];
@@ -73,6 +47,7 @@ class CategoryController extends AbstractController
         
         $categoryNames = array_keys($data); 
         $categoryData = array_values($data); 
+        $totalAmount = array_sum($categoryData);
         $expense = new Expenses(); 
         $form = $this->createForm(ExpensesType::class, $expense); 
         $form->handleRequest($request); 
@@ -85,12 +60,40 @@ class CategoryController extends AbstractController
         } 
         
         $selectedMonth = $request->query->get('month', date('m')); 
+        $months = [ 
+            '01' => 'January', 
+            '02' => 'February', 
+            '03' => 'March', 
+            '04' => 'April', 
+            '05' => 'May', 
+            '06' => 'June', 
+            '07' => 'July', 
+            '08' => 'August', 
+            '09' => 'September', 
+            '10' => 'October', 
+            '11' => 'November', 
+            '12' => 'December', 
+        ]; 
+        
+        $selectedMonthName = $months[$selectedMonth];
         return $this->render('category/index.html.twig', [ 
             'expenses_form' => $form->createView(), 
             'categories' => $categoryNames, 
-            'selectedMonth' => $currentMonth, 
+            'selectedMonth' => $currentMonth,
+            'monthname' => $selectedMonthName, 
             'selectedYear' => $currentYear, 
             'categoryData' => $categoryData,
+            'totalAmount' => $totalAmount,
+            'expenseList' => $expensesRepository->findAll(),
         ]);
     } 
+
+    #[Route('/expenseslist', name: 'expenseslist')]
+    public function show(ExpensesRepository $expensesRepository):Response {
+        $expenses = $expensesRepository->findAll();
+
+        return $this->render('category/show.html.twig', [
+            'expenses' => $expenses,
+        ]);
+    }
 }

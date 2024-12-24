@@ -15,8 +15,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 
-class ExpensesCrudController extends AbstractCrudController
-{
+class ExpensesCrudController extends AbstractCrudController{
     public static function getEntityFqcn(): string
     {
         return Expenses::class;
@@ -27,19 +26,15 @@ class ExpensesCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('Expense')
             ->setEntityLabelInPlural('Expenses')
             ->setSearchFields(['title', 'amount', 'category.name'])
-            ->setDefaultSort(['date' => 'DESC'])
-        ;
+            ->setDefaultSort(['date' => 'DESC']);
     }
 
     public function configureFilters(Filters $filters): Filters{
         return $filters
-            ->add(EntityFilter::new('category'))
-        ;
+            ->add(EntityFilter::new('category'));
     }
-
     
-    public function configureFields(string $pageName): iterable
-    {
+    public function configureFields(string $pageName): iterable {
         /*return [
             IdField::new('id'),
             TextField::new('title'),
@@ -51,14 +46,15 @@ class ExpensesCrudController extends AbstractCrudController
         yield MoneyField::new('amount')->setCurrency('USD');
         yield TextAreaField::new('notes')
             ->hideOnIndex();
+        
         $date = DateField::new('date')->setFormTypeOptions([
-        'years' => range(date('Y'), date('Y') + 5),
-        'widget' => 'single_text',
+            'years' => range(date('Y'), date('Y') + 5),
+            'widget' => 'single_text',
         ]);
+        
         if (Crud::PAGE_EDIT === $pageName)
             yield $date->setFormTypeOption('disabled', true);
          else 
             yield $date;
-        
     }
 }
