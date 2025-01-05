@@ -1,7 +1,62 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}Category Index{% endblock %}
-
-{% block body %}
-    
-{% endblock %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Expenses List{% endblock %}</title>
+        <style>
+            body { background-color: #f3f3f3;}
+            table { width: 100%; border-collapse: collapse; border-spacing: 0; border-bottom: 1px solid #000; } 
+            th, td { border: 1px solid transparent; padding: 8px; text-align: left; } 
+            tr { border-bottom: 2px solid #6495ED; }
+            .table tr td:first-child, 
+            .table tr th:first-child { border-right: 1px solid red;}
+            .table tbody tr td:nth-child(2), 
+            .table thead tr th:nth-child(2) {border-right: double blue; }
+            .table tbody tr td:nth-child(4), 
+            .table thead tr th:nth-child(4) { border-left: double blue; }
+            nav { color: black; padding: 1em; } 
+            nav ul { list-style: none; padding: 0; margin: 0; display: flex; justify-content: space-around; } 
+            nav li { display: inline; } 
+            nav a { color: white; text-decoration: none; padding: 0.5em 1em; } 
+            nav a:hover { background-color: #555; }
+        </style>
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
+    </head>
+    <body>
+    <div class="container" id="mebody">
+        <div class="container">
+        <div id="root"></div>
+            <h2>Expenses:</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Title</th>
+                        <th>Amount</th>
+                        <th>Notes</th>
+                        <th>Category</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in expenseList %}
+                        <tr>
+                            <td>{{ expense.date|date('Y-m-d') }}</td>
+                            <td>{{ expense.title }}</td>
+                            <td>{{ expense.amount }}</td>
+                            <td>{{ expense.notes }}</td>
+                            <td>{{ expense.category.name }}</td>
+                            <td></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        </div>
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
+    </body>
+</html>

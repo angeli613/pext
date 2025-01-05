@@ -48,6 +48,7 @@ class CategoryController extends AbstractController {
         $categoryNames = array_keys($data); 
         $categoryData = array_values($data); 
         $totalAmount = array_sum($categoryData);
+       
         $expense = new Expenses(); 
         $form = $this->createForm(ExpensesType::class, $expense); 
         $form->handleRequest($request); 
@@ -90,10 +91,9 @@ class CategoryController extends AbstractController {
 
     #[Route('/expenseslist', name: 'expenseslist')]
     public function show(ExpensesRepository $expensesRepository):Response {
-        $expenses = $expensesRepository->findAll();
 
         return $this->render('category/show.html.twig', [
-            'expenses' => $expenses,
+            'expenseList' => $expensesRepository->findAll(),
         ]);
     }
 }
