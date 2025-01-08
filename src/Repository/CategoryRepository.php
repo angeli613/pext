@@ -40,4 +40,11 @@ class CategoryRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function createCategory(string $name): Category {
+        $cat = new Category();
+        $cat->setName($name['name']);
+
+        return $cat;
+    }
 }

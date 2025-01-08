@@ -14,10 +14,11 @@ const NavBar = () => {
 					<ul style={{ listStyle: 'none', padding: 0 }}> 
 						<li><a href="/" style={{ color: 'black', textDecoration: 'none' }}>Home</a></li> 
 						<li><a href="/admin" style={{ color: 'black', textDecoration: 'none' }}>Admin View</a></li> 
-						<li><a href="/expenseslist" style={{ color: 'black', textDecoration: 'none' }}>Expenses List</a></li> 
+						<li><a href="#expenselist" style={{ color: 'black', textDecoration: 'none' }}>Expense List</a></li> 
 					</ul> 
 				</nav>
 			)} 
+			<br/>
 		</div> 
 	);
 };

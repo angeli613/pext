@@ -76,4 +76,21 @@ class ExpensesRepository extends ServiceEntityRepository{
 
         return $expense;
     }
+
+    public function getTotalAmountByCategory():array {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT c.name AS category, SUM(e.Amount) AS total_expense
+            FROM Category c, expenses e
+            WHERE c.id = e.category_id
+            GROUP BY c.name
+        ';
+
+        $stmt = $conn->prepare($sql);
+        $resultSet = $stmt->executeQuery([]);
+        $results = $resultSet->fetchAll();
+        
+        return $results;
+    }
 }

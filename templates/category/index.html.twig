@@ -2,139 +2,446 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Symfony & React{% endblock %}</title>
+        <title>{% block title %}Personal Expenses Tracker{% endblock %}</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"> 
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>        
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
         <style>
-            #mebody {background-color:rgba(248, 248, 248, 0.5); color: black; font-family: Arial, sans-serif; } 
-            .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; } 
-            .example-wrapper code { background: #000435; padding: 2px 6px; } 
-            h1 { text-align: center; margin-bottom: 20px; } 
-            ul { list-style-type: none; padding: 0; } 
-            li { padding: 5px 0; } 
-            .form-container { background:rgb(4, 4, 81); padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin-top: 20px; } 
-            .form-group { margin-bottom: 15px; } 
-            .form-group label { display: block; margin-bottom: 5px; } 
-            .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; } 
-            .btn { display: inline-block; padding: 10px 20px; background-color:rgb(5, 50, 98); color: white; text-align: center; border: none; border-radius: 4px; cursor: pointer;} 
-            .btn:hover { background-color:rgb(3, 37, 73); }
-            .modal-header, .modal-body, .modal-footer { background-color:rgb(3, 37, 73); color:white; }
-            .btn-btn-primary { width:45%;padding-right:10px; }
-            .btn-btn-secondary { margin-left:500px; }
-            nav { color: black; padding: 1em; } 
-            nav ul { list-style: none; padding: 0; margin: 0; display: flex; justify-content: space-around; } 
-            nav li { display: inline; } 
-            nav a { color: black; text-decoration: none; padding: 0.5em 1em; } 
-            nav a:hover { background-color: #555; }
-            .expense-table-container { display: block;}
-            .expense-cards-container { display: none;}
+            #mebody {background-color:rgba(240, 240, 240, 0.75); color: black; font-family: Arial, sans-serif; overflow-x: hidden;}
+            h1 {text-align: center; margin-bottom: 20px;} 
+            ul {list-style-type: none; padding: 0;} 
+            li {padding: 5px 0;}
+            body {background-color: #f3f3f3;} 
+            .desktop-table {display: block;} 
+            .mobile-cards {display: none;} 
             @media (max-width: 768px) {
-                .expense-table-container { display: none; }
-                .expense-cards-container  {display: flex; flex-direction: column; align-items: center; }
-                .expense-card { background: white; border: 1px solid #ddd; margin: 10px; padding: 15px; width: 90%; box-shadow: 0 4px 8px rgba(0,0,0,0.1);}
-                }
+                .desktop-table {display: none;}
+                .mobile-cards {display: flex; flex-direction: column;} 
+                .mobile-card {background: white; border: 1px solid #ddd; margin: 10px; padding: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);} 
+            }
+            .form-container {background:rgb(4, 4, 81); padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin-top: 20px;} 
+            .form-group {margin-bottom: 15px;} 
+            .form-group label {display: block; margin-bottom: 5px;} 
+            .form-group input, .form-group select, .form-group textarea {width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;} 
+            .btn {display: inline-block; padding: 10px 20px; background-color:rgb(5, 50, 98); color: white; text-align: center; border: none; border-radius: 4px; cursor: pointer;} 
+            .btn:hover {background-color:rgb(3, 37, 73);}
+            .modal-header, .modal-body, .modal-footer {background-color:rgb(240, 240, 240); color:rgb(5, 50, 98);}
+            .btn-btn-primary {width:45%; padding-right:10px;}
+            .btn-btn-secondary {margin-left:500px;}
+            th, td {border: 1px solid transparent; padding: 8px; text-align: left;}
+            .table tr td:first-child, .table tr th:first-child {border-right: 1px solid red;} 
+            tr {border-bottom: 2px solid #6495ED;}
+            .table tbody tr td:nth-child(2), .table thead tr th:nth-child(2) {border-right: double blue;}
+            .table tbody tr td:nth-child(3), .table thead tr th:nth-child(3) {border-right: double blue;}
+            nav {color: black; padding: 1em; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);} 
+            nav ul {list-style: none; padding: 0; margin: 0; display: flex; justify-content: space-around;} 
+            nav li {display: inline;} 
+            nav a {color: black; text-decoration: none; padding: 0.5em 1em;} 
+            nav a:hover {background-color: rgba(5, 50, 98, 0.5);}
+            #opanel, #cpanel {display:none; background-color:rgb(255, 255, 255)}
+            .flips {display:flex; justify-content: space-between; width:100%;padding:10px 10px 0px 10px}
+            #cflip {border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding:6px 10px 1px 10px; justify-content: flex-end; display:flex; align-items: center; cursor: pointer;}
+            #oflip {border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin:10px; padding:10px 15px; display: flex; justify-content: center; align-items: center; cursor: pointer;}
+            .chart-container {position: relative; width: 100%; max-width: 300px;}
+            h2, h4, h5 {color:rgb(5, 50, 98);}
+            .card-header {background-color:rgba(5, 50, 98,0.75); color: #fff;}           
+            .chart-container {border: 1px solid #dee2e6; padding: 10px; border-radius: 8px; background-color: #fff;}
+            .right-align-container select {border: 1px solid #007bff; border-radius: 4px; padding: 5px;}
+            a:hover, button:hover, .card:hover {transition: background-color 0.3s, color 0.3s;}        
         </style>
+        <script>
+			$(document).ready(function()
+			{
+				$("#oflip").click(function()
+				{	
+					$("#opanel").slideDown("slow");
+				});
+                $("#cflip").click(function(){
+					$("#opanel").slideUp();
+				});
+			});
+		</script>
+        <script>
+            $(document).ready(function() {
+                $('#categoryFilter').on('change', function() {
+                    var selectedCategory = $(this).val().toLowerCase();
+                    if (selectedCategory === 'all') 
+                        $('#expenseTable tr').show();
+                    else {
+                        $('#expenseTable tr').each(function() {
+                            var rowCategory = $(this).find('td:eq(4)').text().toLowerCase();                        
+                            if (rowCategory === selectedCategory) 
+                                $(this).show();
+                             else 
+                                $(this).hide();
+                        });
+                    }
+                });
+            });
+        </script>
+        
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
         {% endblock %}
     </head>
     <body id="mebody">
         <!--Navbar-->
-        <div id="root"></div>
-
+        <div class="container-fluid" id="root"><br/></div>
+        <!--End of NavBar-->
+        
         <!--Expenses summary-->
         <div class="row">
             <div class="col">
                 <div class="container mt-3">
-                    <h3>Total Expenses for {{ monthname }} {{ selectedYear }}: $ {{ totalAmount }}</h3>
+                    <h3>Total Expenses for {{ monthname }} {{ selectedYear }}: Rs{{ totalAmount }}</h3>
                 </div> 
+                </br >
                 
-                <!--Action button-->
-                <div class="container mt-3">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#memodal">Add Expense</button>
-                </div>
+                <!--Add expenses button-->
+                <div class="form-group d-inline-flex align-items-center">
+                    <div class="container mt-3">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#memodal">Add Expense</button>
+                    </div>
 
-                <div class="modal" id="memodal">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h4 class="modal-title">Record your expense</h4>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body">
-                                {{ form_start(expenses_form) }}
-                                <div class="form-group">
-                                    {{ form_label(expenses_form.Title) }}
-                                    {{ form_widget(expenses_form.Title) }}
+                    <div class="modal" id="memodal">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Record your expense</h4>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                 </div>
-                                <div class="form-group">
-                                    {{ form_label(expenses_form.amount) }}
-                                    {{ form_widget(expenses_form.amount) }}
+                                <div class="modal-body">
+                                    {{ form_start(expenses_form) }}
+                                        <div class="form-group">
+                                            {{ form_label(expenses_form.Title) }}
+                                            {{ form_widget(expenses_form.Title) }}
+                                        </div>
+                                        <div class="form-group">
+                                            {{ form_label(expenses_form.amount) }}
+                                            {{ form_widget(expenses_form.amount) }}
+                                        </div>
+                                        <div class="form-group">
+                                            {{ form_label(expenses_form.category) }}
+                                            {{ form_widget(expenses_form.category) }}
+                                        </div>
+                                        <div class="form-group">
+                                            {{ form_label(expenses_form.date) }}
+                                            {{ form_widget(expenses_form.date) }}
+                                        </div>
+                                        <div class="form-group">
+                                            {{ form_label(expenses_form.notes) }}
+                                            {{ form_widget(expenses_form.notes) }}
+                                        </div>
+                                        <button class="btn btn-primary">{{ button_label|default('Save') }}</button>  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    {{ form_end(expenses_form) }}
                                 </div>
-                                <div class="form-group">
-                                    {{ form_label(expenses_form.category) }}
-                                    {{ form_widget(expenses_form.category) }}
-                                </div>
-                                <div class="form-group">
-                                    {{ form_label(expenses_form.date) }}
-                                    {{ form_widget(expenses_form.date) }}
-                                </div>
-                                <div class="form-group">
-                                    {{ form_label(expenses_form.notes) }}
-                                    {{ form_widget(expenses_form.notes) }}
-                                </div>
-                                <button class="btn btn-primary">{{ button_label|default('Save') }}</button>  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                {{ form_end(expenses_form) }}
                             </div>
                         </div>
                     </div>
+                    <!--End of Add expenses button-->
+
+                    <!--Add category button-->
+                    <div class="container mt-3">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#catmodal" style="white-space: nowrap;">Add Category</button>
+                    </div>
+
+                    <div class="modal" id="catmodal">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Add new Category</h4>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    {{ form_start(category_form) }}
+                                    <div class="form-group">
+                                        {{ form_label(category_form.name) }}
+                                        {{ form_widget(category_form.name) }}
+                                    </div>
+                                        <button class="btn btn-primary">{{ button_label|default('Save') }}</button>  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    {{ form_end(category_form) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--End of Add category button-->
                 </div>
             </div>
+            
+            <!--Pie Chart-->
             <div class="col">
-                <div class="container mt-3" style="width:50%;height:100%;">
+                <div class="chart-container">
                     <canvas id="myChart"></canvas>
                 </div>
-        </div>
+            </div>
+            <!--End of Pie Chart-->
+        </div><hr />
 
-        <div class="container mt-3">
-            <h2>Card Header and Footer</h2>
-            <div class="card">
-                <div class="card-header">Header</div>
-                <div class="card-body">Content</div> 
-                <div class="card-footer">Footer</div>
+        <div class="container-fluid">
+            <div class="flips"><div id="oflip"><h5>Click to see your expenses by category</h5></div></div>
+			<div id="opanel"> 
+                <!--formcontent-->
+                <div class="formcontent">
+                    <div class="flips">.<div id="cflip" style="padding-right:10px;"><h5><i class="fa fa-times"></i></h5></div></div>
+                    </br>
+                    <div class="row" style="padding:0px 10px;">
+                        {% for totbycat in totalByCat %}
+                            <div class="col-sm-3" id="catcard">
+                                <div class="card">
+                                    <div class="card-header">{{ totbycat.category }}</div>
+                                    <div class="card-body">Rs{{ totbycat.total_expense }}</div>   
+                                </div>
+                                </br>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    </br>
+                </div>                 
+                <!--end of formcontent-->		
+			</div>
+        </div>
+        </br>
+        <hr />
+        </br>
+        <div class="container">
+            <div class="form-group d-inline-flex align-items-center" style="justify-content: flex-end; width: 100%; padding-left:90%;">
+                <label for="categoryFilter" style="margin-right:10px; padding-top:-25px;">Filter</label>
+                <select id="categoryFilter" style="padding-right:5px;" class="form-control mb-3">
+                    <option value="all">All</option>5
+                    {% for cat in totalByCat %}
+                        <option value="{{ cat.category }}">{{ cat.category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        </br>
+
+        <div class="container-fluid" id="expenselist"> 
+            <h2>List of Expenses</h2> 
+            <div class="desktop-table"> 
+                <table class="table table-striped"> 
+                    <thead>     
+                        <tr> 
+                            <th data-sort>Date</th> 
+                            <th data-sort>Title</th> 
+                            <th data-sort>Amount(Rs)</th>
+                            <th>Notes</th> 
+                            <th>Category</th> 
+                            <th>Actions</th> 
+                        </tr> 
+                    </thead> 
+                    <tbody id ="expenseTable"> 
+                        {% for expense in expenseList %} 
+                            <tr data-id="{{ expense.id }}"> 
+                                <td>{{ expense.date|date('d-m-Y') }}</td> 
+                                <td>{{ expense.title }}</td> 
+                                <td>{{ expense.amount }}</td>
+                                <td>{{ expense.notes }}</td> 
+                                <td>{{ expense.category.name }}</td> 
+                                <td> 
+                                    <button class="btn btn-warning btn-sm" onclick="openEditModal({{ expense.id }})"><i class="fas fa-pencil-alt"></i></button> 
+                                    <button class="btn btn-danger btn-sm" onclick="deleteExpense({{ expense.id }})"><i class="fas fa-trash"></i></button> 
+                                </td> 
+                            </tr> 
+                        {% endfor %} 
+                    </tbody> 
+                </table> 
+            </div> 
+            
+            <div class="mobile-cards"> 
+                {% for expense in expenseList %} 
+                    <div class="mobile-card" data-id="{{ expense.id }}"> 
+                        <p><strong>Date:</strong> {{ expense.date|date('d-m-Y') }}</p> 
+                        <p><strong>Title:</strong> {{ expense.title }}</p> 
+                        <p><strong>Amount:</strong> {{ expense.amount }}</p> 
+                        <p><strong>Category:</strong> {{ expense.category.name }}</p> 
+                        <p><strong>Notes:</strong> {{ expense.notes }}</p> 
+                        <button class="btn btn-warning btn-sm" onclick="openEditModal({{ expense.id }})"><i class="fas fa-pencil-alt"></i></button> 
+                        <button class="btn btn-danger btn-sm" onclick="deleteExpense({{ expense.id }})"><i class="fas fa-trash"></i></button> 
+                    </div> 
+                {% endfor %} 
+            </div> 
+        </div> 
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true"> 
+            <div class="modal-dialog"> 
+                <div class="modal-content"> 
+                    <div class="modal-header"> 
+                        <h5 class="modal-title" id="editModalLabel">Edit Expense</h5> 
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> 
+                    </div> 
+
+                    <div class="modal-body"> 
+                        <form id="editForm"> 
+                            <input type="hidden" id="expenseId">
+                                <div class="mb-3"> 
+                                    <label for="title" class="form-label">Title</label> 
+                                    <input type="text" class="form-control" id="title"> 
+                                </div> 
+                                <div class="mb-3"> 
+                                    <label for="amount" class="form-label">Amount</label> 
+                                    <input type="decimal" class="form-control" id="amount"> 
+                                </div> 
+                            <div class="mb-3"> 
+                                <label for="notes" class="form-label">Notes</label> 
+                                <textarea class="form-control" id="notes"></textarea> 
+                            </div> 
+                            <button type="submit" class="btn btn-primary">Save changes</button> 
+                        </form> 
+                    </div> 
+                </div> 
             </div>
         </div>
 
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
         <script>
-        const ctx = document.getElementById('myChart').getContext('2d');
-
-        new Chart(ctx, {
-            type: 'pie',
-            data: {
-            labels: {{ categories|json_encode()|raw }},
-            datasets: [{
-                label: 'Expenses per month',
-                data: {{ categoryData|json_encode()|raw }},
-                borderWidth: 1,
-                backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)', 'rgb(10, 138, 55)', 'rgb(154, 87, 225)'],
-                hoverOffset: 4
-            }]
-            },
-            options: {
-                cutout: '0%',
-                scales: {
-                    y: {
-                        beginAtZero: true
+            const ctx = document.getElementById('myChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                labels: {{ categories|json_encode()|raw }},
+                datasets: [{
+                    label: 'Expenses per month Rs',
+                    data:{{ categoryData|json_encode()|raw }},
+                    borderWidth: 1,
+                    backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)', 'rgb(10, 138, 55)', 'rgb(154, 87, 225)'],
+                    hoverOffset: 4
+                }]
+                },
+                options: {
+                    cutout: '0%',
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
-        });
+            });
         </script>
+        <!--<script>
+            const ctx = document.getElementById('myChart').getContext('2d');
 
-        {% block javascripts %}
-            {{ encore_entry_script_tags('app') }}
-        {% endblock %}
+            const categories = {{ categories|json_encode()|raw }};
+            const categoryColors = generateRandomColors(categories.length);
+
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: categories,
+                    datasets: [{
+                        label: 'Expenses per month $',
+                        data: {{ categoryData|json_encode()|raw }},
+                        borderWidth: 1,
+                        backgroundColor: categoryColors,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    cutout: '0%',
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            function getRandomColor() {
+                const letters = '0123456789ABCDEF';
+                let color = '#';
+                for (let i = 0; i < 6; i++) 
+                    color += letters[Math.floor(Math.random() * 16)];
+                
+                return color;
+            }
+
+            function generateRandomColors(numColors) {
+                const colors = [];
+                for (let i = 0; i < numColors; i++) 
+                    colors.push(getRandomColor());
+                
+                return colors;
+            }
+        </script>-->
+
+        <script> 
+            let currentExpenseId; 
+            
+            function openEditModal(expenseId) {
+                currentExpenseId = expenseId; 
+                const expenseRow = document.querySelector(`tr[data-id="${expenseId}"]`); 
+                document.getElementById('expenseId').value = expenseId; 
+                document.getElementById('title').value = expenseRow.children[1].innerText; 
+                document.getElementById('amount').value = expenseRow.children[2].innerText; 
+                document.getElementById('notes').value = expenseRow.children[3].innerText; 
+                const editModal = new bootstrap.Modal(document.getElementById('editModal')); 
+                editModal.show(); 
+            } 
+            
+            document.getElementById('editForm').addEventListener('submit', function(event) {
+                event.preventDefault(); 
+                const expenseId = document.getElementById('expenseId').value; 
+                const title = document.getElementById('title').value; 
+                const amount = document.getElementById('amount').value; 
+                const notes = document.getElementById('notes').value; 
+                const url = `/expenses/${expenseId}?title=${title}&amount=${amount}&notes=${notes}`; 
+                
+                ajax(url, 'PUT', function(responseText) {
+                    const response = JSON.parse(responseText); 
+                    if (response.success) {
+                        const expenseRow = document.querySelector(`tr[data-id="${expenseId}"]`); 
+                        if (expenseRow) {
+                            expenseRow.children[1].innerText = title; 
+                            expenseRow.children[2].innerText = amount; 
+                            expenseRow.children[3].innerText = notes; 
+                        } 
+                        const expenseCard = document.querySelector(`.mobile-card[data-id="${expenseId}"]`); 
+                        if (expenseCard) {
+                            expenseCard.querySelector('p:nth-child(2)').innerText = `Title: ${title}`; 
+                            expenseCard.querySelector('p:nth-child(3)').innerText = `Amount: ${amount}`; 
+                            expenseCard.querySelector('p:nth-child(5)').innerText = `Notes: ${notes}`; 
+                       } 
+                        
+                        const editModal = bootstrap.Modal.getInstance(document.getElementById('editModal')); 
+                        editModal.hide(); 
+                    } 
+                    else 
+                        alert('Failed to update the expense.');              
+                }); 
+            }); 
+            
+            function ajax(url, method, callback) {
+                var envelop = new XMLHttpRequest();
+                envelop.open(method, url, true);
+                envelop.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+                envelop.onreadystatechange = function() {
+                    if (envelop.readyState == 4 && envelop.status == 200)
+                        callback(envelop.responseText);
+                    else if (envelop.readyState == 4 && envelop.status != 200)
+                        alert('An error occurred: ' + envelop.statusText);
+                };
+                envelop.send(null);
+            }
+            
+            function deleteExpense(expenseId) {
+                if (confirm('Are you sure you want to delete this expense?')) {
+                    var url = `/expenses/${expenseId}`; 
+                    ajax(url, 'DELETE', function(responseText) {
+                        var expenseRow = document.querySelector(`tr[data-id="${expenseId}"]`); 
+                        if (expenseRow)  
+                            expenseRow.remove();  
+                        
+                        var expenseCard = document.querySelector(`.mobile-card[data-id="${expenseId}"]`); 
+                        if (expenseCard) 
+                            expenseCard.remove(); 
+                        location.reload();
+                    });
+                } 
+            }
+        </script>
+        {% block javascripts %} 
+            {{ encore_entry_script_tags('app') }} 
+        {% endblock %} 
     </body>
 </html>
