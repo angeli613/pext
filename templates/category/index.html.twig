@@ -225,8 +225,8 @@
                     <thead>     
                         <tr> 
                             <th data-sort><span>Date <i class="fa fa-arrows-alt-v"></i></span></th> 
-                            <th data-sort>Title</th> 
-                            <th data-sort>Amount(Rs)</th>
+                            <th>Title</th> 
+                            <th data-sort><span>Amount(Rs) <i class="fa fa-arrows-alt-v"></i></span></th>
                             <th>Notes</th> 
                             <th>Category</th> 
                             <th>Actions</th> 
@@ -237,7 +237,7 @@
                             <tr data-id="{{ expense.id }}"> 
                                 <td data-sort-value="{{ expense.date|date('Y-m-d') }}">{{ expense.date|date('d-m-Y') }}</td> 
                                 <td>{{ expense.title }}</td> 
-                                <td>{{ expense.amount }}</td>
+                                <td data-sort-value="{{ expense.amount }}">{{ expense.amount }}</td>
                                 <td>{{ expense.notes }}</td> 
                                 <td>{{ expense.category.name }}</td> 
                                 <td> 
@@ -307,6 +307,9 @@
                         rows.sort((rowA, rowB) => { 
                             const cellA = rowA.children[index].getAttribute('data-sort-value'); 
                             const cellB = rowB.children[index].getAttribute('data-sort-value'); 
+
+                            if (!isNaN(cellA) && !isNaN(cellB))  
+                                return asc ? cellA - cellB : cellB - cellA; 
 
                             return asc ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
                         }); 
