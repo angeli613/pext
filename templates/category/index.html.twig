@@ -43,12 +43,12 @@
             #opanel, #cpanel {display:none; background-color:rgb(255, 255, 255)}
             .flips {display:flex; justify-content: space-between; width:100%;padding:10px 10px 0px 10px}
             #cflip {border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding:6px 10px 1px 10px; justify-content: flex-end; display:flex; align-items: center; cursor: pointer;}
-            #oflip {border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin:10px; padding:10px 15px; display: flex; justify-content: center; align-items: center; cursor: pointer;}
+            #oflip {background-color:rgb(255, 255, 255), border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin:10px; padding:10px 15px; display: flex; justify-content: center; align-items: center; cursor: pointer;}
             .chart-container {position: relative; width: 100%; max-width: 300px;}
             h2, h4, h5 {color:rgb(5, 50, 98);}
             .card-header {background-color:rgba(5, 50, 98,0.75); color: #fff;}           
-            .chart-container {border: 1px solid #dee2e6; padding: 10px; border-radius: 8px; background-color: #fff;}
-            .right-align-container select {border: 1px solid #007bff; border-radius: 4px; padding: 5px;}
+            .chart-container {border: 1px solid #dee2e6; padding: 10px; border-radius: 8px; background-color: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.1);}
+            .right-align-container select {border: 1px solid #007bff; border-radius: 4px;}
             a:hover, button:hover, .card:hover {transition: background-color 0.3s, color 0.3s;}        
         </style>
         <script>
@@ -95,7 +95,7 @@
         <div class="row">
             <div class="col">
                 <div class="container mt-3">
-                    <h3>Total Expenses for {{ monthname }} {{ selectedYear }}: Rs{{ totalAmount }}</h3>
+                    <h3 style="margin-top:10%;">Total Expenses for {{ monthname }} {{ selectedYear }}: Rs {{ '%.2f'|format(totalAmount) }}</h3>
                 </div> 
                 </br >
                 
@@ -177,10 +177,10 @@
                 </div>
             </div>
             <!--End of Pie Chart-->
-        </div><hr />
+        </div></br><hr />
 
         <div class="container-fluid">
-            <div class="flips"><div id="oflip"><h5>Click to see your expenses by category</h5></div></div>
+            <div class="flips"><div id="oflip" style="background-color:rgb(255, 255, 255)"><h5>Click to see your expenses by category</h5></div></div>
 			<div id="opanel"> 
                 <!--formcontent-->
                 <div class="formcontent">
@@ -191,7 +191,7 @@
                             <div class="col-sm-3" id="catcard">
                                 <div class="card">
                                     <div class="card-header">{{ totbycat.category }}</div>
-                                    <div class="card-body">Rs{{ totbycat.total_expense }}</div>   
+                                    <div class="card-body">Rs {{ totbycat.total_expense }}</div>   
                                 </div>
                                 </br>
                             </div>
@@ -206,9 +206,9 @@
         <hr />
         </br>
         <div class="container">
-            <div class="form-group d-inline-flex align-items-center" style="justify-content: flex-end; width: 100%; padding-left:90%;">
+            <div class="form-group d-inline-flex align-items-center" style="justify-content: flex-end; width: 100%;">
                 <label for="categoryFilter" style="margin-right:10px; padding-top:-25px;">Filter</label>
-                <select id="categoryFilter" style="padding-right:5px;" class="form-control mb-3">
+                <select id="categoryFilter" style="width: fit-content;" class="form-control mb-3">
                     <option value="all">All</option>5
                     {% for cat in totalByCat %}
                         <option value="{{ cat.category }}">{{ cat.category }}</option>
@@ -224,7 +224,7 @@
                 <table class="table table-striped"> 
                     <thead>     
                         <tr> 
-                            <th data-sort>Date</th> 
+                            <th data-sort><span>Date <i class="fa fa-arrows-alt-v"></i></span></th> 
                             <th data-sort>Title</th> 
                             <th data-sort>Amount(Rs)</th>
                             <th>Notes</th> 
@@ -235,7 +235,7 @@
                     <tbody id ="expenseTable"> 
                         {% for expense in expenseList %} 
                             <tr data-id="{{ expense.id }}"> 
-                                <td>{{ expense.date|date('d-m-Y') }}</td> 
+                                <td data-sort-value="{{ expense.date|date('Y-m-d') }}">{{ expense.date|date('d-m-Y') }}</td> 
                                 <td>{{ expense.title }}</td> 
                                 <td>{{ expense.amount }}</td>
                                 <td>{{ expense.notes }}</td> 
@@ -264,12 +264,12 @@
                 {% endfor %} 
             </div> 
         </div> 
-        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true"> 
+        <div class="modal fade" id="editModal" tabindex="-1"> 
             <div class="modal-dialog"> 
                 <div class="modal-content"> 
                     <div class="modal-header"> 
                         <h5 class="modal-title" id="editModalLabel">Edit Expense</h5> 
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> 
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button> 
                     </div> 
 
                     <div class="modal-body"> 
@@ -293,6 +293,28 @@
                 </div> 
             </div>
         </div>
+
+        <script> 
+            document.addEventListener('DOMContentLoaded', function() { 
+                const table = document.querySelector('#expenseTable'); 
+                const headers = document.querySelectorAll('th[data-sort]'); 
+                
+                headers.forEach(header => { 
+                    header.addEventListener('click', () => { 
+                        const rows = Array.from(table.querySelectorAll('tr')); 
+                        const index = Array.from(header.parentNode.children).indexOf(header); 
+                        const asc = header.classList.toggle('asc'); 
+                        rows.sort((rowA, rowB) => { 
+                            const cellA = rowA.children[index].getAttribute('data-sort-value'); 
+                            const cellB = rowB.children[index].getAttribute('data-sort-value'); 
+
+                            return asc ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+                        }); 
+                        rows.forEach(row => table.appendChild(row));
+                    });
+                }); 
+            }); 
+        </script>
 
         <script>
             const ctx = document.getElementById('myChart').getContext('2d');
@@ -318,51 +340,6 @@
                 }
             });
         </script>
-        <!--<script>
-            const ctx = document.getElementById('myChart').getContext('2d');
-
-            const categories = {{ categories|json_encode()|raw }};
-            const categoryColors = generateRandomColors(categories.length);
-
-            new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: categories,
-                    datasets: [{
-                        label: 'Expenses per month $',
-                        data: {{ categoryData|json_encode()|raw }},
-                        borderWidth: 1,
-                        backgroundColor: categoryColors,
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    cutout: '0%',
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
-            function getRandomColor() {
-                const letters = '0123456789ABCDEF';
-                let color = '#';
-                for (let i = 0; i < 6; i++) 
-                    color += letters[Math.floor(Math.random() * 16)];
-                
-                return color;
-            }
-
-            function generateRandomColors(numColors) {
-                const colors = [];
-                for (let i = 0; i < numColors; i++) 
-                    colors.push(getRandomColor());
-                
-                return colors;
-            }
-        </script>-->
 
         <script> 
             let currentExpenseId; 
