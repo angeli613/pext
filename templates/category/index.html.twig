@@ -8,6 +8,9 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+        <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
         <style>
             #mebody {background-color:rgba(240, 240, 240, 0.75); color: black; font-family: Arial, sans-serif; overflow-x: hidden;}
             h1 {text-align: center; margin-bottom: 20px;} 
@@ -50,7 +53,9 @@
             .chart-container {border: 1px solid #dee2e6; padding: 10px; border-radius: 8px; background-color: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.1);}
             .right-align-container select {border: 1px solid #007bff; border-radius: 4px;}
             a:hover, button:hover, .card:hover {transition: background-color 0.3s, color 0.3s;}        
+            #extable {padding:1% 0%}
         </style>
+<!------------------------------------------------------------------------------------------------------------------------------------->
         <script>
 			$(document).ready(function()
 			{
@@ -86,11 +91,12 @@
             {{ encore_entry_link_tags('app') }}
         {% endblock %}
     </head>
+<!------------------------------------------------------------------------------------------------------------------------------------->
     <body id="mebody">
         <!--Navbar-->
         <div class="container-fluid" id="root"><br/></div>
         <!--End of NavBar-->
-        
+        <!--this is after exporting to server-->
         <!--Expenses summary-->
         <div class="row">
             <div class="col">
@@ -216,12 +222,11 @@
                 </select>
             </div>
         </div>
-        </br>
 
         <div class="container-fluid" id="expenselist"> 
             <h2>List of Expenses</h2> 
             <div class="desktop-table"> 
-                <table class="table table-striped"> 
+                <table class="table table-striped" id="extable"> 
                     <thead>     
                         <tr> 
                             <th data-sort><span>Date <i class="fa fa-arrows-alt-v"></i></span></th> 
@@ -293,6 +298,17 @@
                 </div> 
             </div>
         </div>
+        <div style="padding-bottom:1%;">
+        </div>
+<!------------------------------------------------------------------------------------------------------------------------------------>
+        <script>
+        $(document).ready(function() {
+            $('#extable').DataTable({
+                "paging": true,        // Enable pagination
+                "pageLength": 10       // Set number of rows per page
+            });
+        });
+        </script>
 
         <script> 
             document.addEventListener('DOMContentLoaded', function() { 
